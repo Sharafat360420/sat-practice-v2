@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bluebook™ Digital SAT Practice Simulator</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter & Source Serif 4 (for authentic SAT reading passages) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for clean mathematical rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      overflow-x: hidden;
+    }
+
+    .passage-font {
+      font-family: 'Source Serif 4', Georgia, serif;
+      line-height: 1.75;
+    }
+
+    /* Bluebook dashed divider borders */
+    .bluebook-dashed-top {
+      background-image: linear-gradient(to right, #94a3b8 50%, rgba(255, 255, 255, 0) 0%);
+      background-position: top;
+      background-size: 10px 2px;
+      background-repeat: repeat-x;
+    }
+
+    .bluebook-dashed-bottom {
+      background-image: linear-gradient(to right, #94a3b8 50%, rgba(255, 255, 255, 0) 0%);
+      background-position: bottom;
+      background-size: 10px 2px;
+      background-repeat: repeat-x;
+    }
+
+    /* Highlighted passage text */
+    .sat-highlight {
+      background-color: #fef08a;
+      border-bottom: 2px solid #eab308;
+      border-radius: 2px;
+      padding: 0 2px;
+      cursor: pointer;
+    }
+
+    /* Eliminated answer choice styling */
+    .eliminated-option {
+      opacity: 0.45;
+    }
+
+    .eliminated-option .option-text {
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+      text-decoration-color: #475569;
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- =====================================================================
+       VIEW 1: LANDING / EXAM MODE SELECTION SCREEN
+  ====================================================================== -->
+  <div id="landing-view" class="flex-1 flex flex-col">
+    <!-- Top Navbar -->
+    <header class="bg-white border-b border-slate-200 px-4 sm:px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-[#1e3a8a] text-white flex items-center justify-center font-extrabold text-lg shadow-sm">
+          B
+        </div>
+        <div>
+          <span class="font-bold text-slate-900 text-lg tracking-tight">Bluebook™ Simulator</span>
+          <span class="hidden sm:inline-block ml-2 text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+            Digital SAT Edition
+          </span>
+        </div>
+      </div>
+      <div class="text-xs sm:text-sm text-slate-500 font-medium">
+        400–1600 Adaptive Scoring Engine
+      </div>
+    </header>
+
+    <!-- Main Hero & Mode Cards -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 py-8 sm:py-12">
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-semibold mb-4">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          Official Multistage Adaptive Testing (MST) Architecture
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+          Master the Digital SAT Environment
+        </h1>
+        <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
+          Practice with a Bluebook-inspired interface featuring passage highlighting, option eliminators, a graphing & scientific calculator, math reference sheet, and adaptive Module 2 routing.
+        </p>
+      </div>
+
+      <!-- Primary Exam Mode Cards -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+        <!-- Card 1: Full Adaptive Simulation -->
+        <div class="bg-white rounded-2xl border-2 border-[#1e3a8a] p-6 sm:p-8 shadow-md flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute top-0 right-0 bg-[#1e3a8a] text-white text-xs font-bold px-3 py-1 rounded-bl-xl">
+            FULL EXAM
+          </div>
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-[#1e3a8a] flex items-center justify-center mb-5">
+              <i data-lucide="layers" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 mb-2">Full Adaptive Simulation</h2>
+            <p class="text-slate-600 text-sm mb-6">
+              Complete 4-module adaptive exam covering Reading & Writing and Math, with an optional 10-minute break between sections and adaptive Module 2 routing.
+            </p>
+            <ul class="space-y-2.5 text-sm text-slate-700 mb-8">
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                <span><strong>Section 1:</strong> Reading & Writing (Module 1 → Adaptive Module 2)</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                <span><strong>Section 2:</strong> Math with Graphing Calculator (Module 1 → Adaptive Module 2)</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                <span>Includes optional 10-minute inter-section break & full 400–1600 score report</span>
+              </li>
+            </ul>
+          </div>
+          <button onclick="startExam('full')" class="w-full py-3.5 px-6 rounded-xl bg-[#1e3a8a] hover:bg-blue-900 text-white font-semibold text-base shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+            <span>Start Full Adaptive Test</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Card 2: Dedicated Math Only Test + Focused Practice Modes -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-5">
+              <i data-lucide="calculator" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900 mb-2">Math Only Test & Practice Modes</h2>
+            <p class="text-slate-600 text-sm mb-5">
+              Jump straight into a dedicated adaptive Math test or run a targeted section sprint without taking Reading & Writing first.
+            </p>
+
+            <div class="space-y-3 mb-6">
+              <!-- Dedicated Math Only Test Button -->
+              <button onclick="startExam('math_only')" class="w-full p-4 rounded-xl border-2 border-emerald-600 bg-emerald-50/40 hover:bg-emerald-50 transition text-left flex items-center justify-between group cursor-pointer">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-slate-900 group-hover:text-emerald-900 text-base">Math Only Test (Adaptive)</span>
+                    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-600 text-white">New</span>
+                  </div>
+                  <div class="text-xs text-slate-600 mt-0.5">Starts at Math Module 1 → Routes to Harder or Standard Module 2 • MC + Grid-In</div>
+                </div>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-emerald-700 shrink-0"></i>
+              </button>
+
+              <!-- Reading & Writing Sprint -->
+              <button onclick="startExam('rw_only')" class="w-full p-3.5 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 transition text-left flex items-center justify-between group cursor-pointer">
+                <div>
+                  <div class="font-semibold text-slate-900 group-hover:text-blue-900">Reading & Writing Only Test</div>
+                  <div class="text-xs text-slate-500">Starts at RW Module 1 → Routes to Harder or Standard Module 2 • Split-Screen</div>
+                </div>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 group-hover:text-blue-700 shrink-0"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-start gap-2.5">
+            <i data-lucide="info" class="w-4 h-4 text-blue-600 shrink-0 mt-0.5"></i>
+            <span>Math modes include the built-in <strong>Graphing & Scientific Calculator</strong>, <strong>Math Reference Sheet</strong>, <strong>Option Eliminator</strong>, and <strong>Flag for Review</strong>.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Digital SAT Structure Overview -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+        <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <i data-lucide="layout-grid" class="w-5 h-5 text-blue-700"></i>
+          Digital SAT Structure & Scoring Overview
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-xs font-bold uppercase tracking-wider text-blue-700 mb-1">Section 1 • RW</div>
+            <div class="font-bold text-slate-900 text-base mb-1">Reading & Writing</div>
+            <p class="text-xs text-slate-600">Concise passages with discrete questions across Craft & Structure, Information & Ideas, Conventions, and Expression of Ideas.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1">Section 2 • Math</div>
+            <div class="font-bold text-slate-900 text-base mb-1">Quantitative Reasoning</div>
+            <p class="text-xs text-slate-600">Multiple-choice and Student-Produced Response (SPR) numeric grid-ins across Algebra, Advanced Math, Data Analysis, and Geometry.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-1">MST Routing</div>
+            <div class="font-bold text-slate-900 text-base mb-1">Multistage Adaptive</div>
+            <p class="text-xs text-slate-600">Meeting the Module 1 accuracy threshold routes you to the Higher-Difficulty Module 2, unlocking a higher score ceiling.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1">Scaled Score</div>
+            <div class="font-bold text-slate-900 text-base mb-1">400 – 1600 Scale</div>
+            <p class="text-xs text-slate-600">200–800 per section, weighted by Module 2 difficulty tier, paired with a domain-by-domain review.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- =====================================================================
+       VIEW 2: INTER-MODULE / BREAK TRANSITION SCREEN
+  ====================================================================== -->
+  <div id="transition-view" class="hidden flex-1 flex items-center justify-center bg-slate-50 p-4">
+    <div class="max-w-lg w-full bg-white rounded-2xl border border-slate-200 shadow-lg p-8 text-center">
+      <div class="w-14 h-14 rounded-full bg-blue-100 text-[#1e3a8a] flex items-center justify-center mx-auto mb-5">
+        <i id="transition-icon" data-lucide="cpu" class="w-7 h-7"></i>
+      </div>
+      <div id="transition-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200 mb-3">
+        Adaptive Routing Complete
+      </div>
+      <h2 id="transition-title" class="text-2xl font-extrabold text-slate-900 mb-2">
+        Preparing Module 2
+      </h2>
+      <p id="transition-desc" class="text-slate-600 text-sm leading-relaxed mb-6">
+        Based on your Module 1 performance, the adaptive engine has selected your next module.
+      </p>
+
+      <!-- Optional Break Countdown Banner (shown between RW and Math in Full Simulation) -->
+      <div id="break-timer-box" class="hidden mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200">
+        <div class="text-xs font-bold uppercase tracking-wider text-amber-800 mb-1">
+          Optional Break Countdown
+        </div>
+        <div id="break-timer-display" class="font-mono text-2xl font-extrabold text-amber-900">
+          10:00
+        </div>
+        <p class="text-xs text-amber-700 mt-1">
+          Stretch, hydrate, or click "Begin Next Module" whenever you are ready to start Math.
+        </p>
+      </div>
+
+      <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 mb-6 text-left text-sm space-y-2">
+        <div class="flex justify-between">
+          <span class="text-slate-500">Next Stage:</span>
+          <span id="transition-next-module" class="font-bold text-slate-900">Math • Module 1</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Difficulty / Stage:</span>
+          <span id="transition-tier" class="font-bold text-indigo-700">Baseline Routing</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Time Allotted:</span>
+          <span id="transition-time" class="font-bold text-slate-900">9 Minutes</span>
+        </div>
+      </div>
+
+      <button onclick="proceedFromTransition()" class="w-full py-3.5 px-6 rounded-xl bg-[#1e3a8a] hover:bg-blue-900 text-white font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
+        <span>Begin Next Module</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       VIEW 3: BLUEBOOK TESTING INTERFACE
+  ====================================================================== -->
+  <div id="exam-view" class="hidden flex-1 flex flex-col h-screen overflow-hidden bg-white">
+    <!-- Top Bluebook Header -->
+    <header class="bg-[#f1f5f9] border-b border-slate-300 px-3 sm:px-6 py-2.5 flex items-center justify-between shrink-0 z-20">
+      <!-- Left: Section & Module Info -->
+      <div class="flex flex-col">
+        <div class="flex items-center gap-2">
+          <span id="header-section-title" class="font-bold text-slate-900 text-sm sm:text-base">
+            Section 2, Module 1: Math
+          </span>
+          <span id="header-adaptive-pill" class="hidden sm:inline-block text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+            Module 1
+          </span>
+        </div>
+        <button onclick="toggleDirectionsModal()" class="text-xs text-blue-700 hover:underline font-medium flex items-center gap-1 w-fit mt-0.5 cursor-pointer">
+          <span>Directions</span>
+          <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <!-- Center: Hideable Countdown Timer -->
+      <div class="flex flex-col items-center">
+        <div id="timer-display" class="font-mono font-bold text-lg sm:text-xl text-slate-900 tracking-tight">
+          09:00
+        </div>
+        <button onclick="toggleTimerVisibility()" id="timer-toggle-btn" class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 transition cursor-pointer">
+          Hide
+        </button>
+      </div>
+
+      <!-- Right: Bluebook Tools -->
+      <div class="flex items-center gap-1.5 sm:gap-2.5">
+        <!-- Highlighter Tool (Visible on RW) -->
+        <button id="btn-highlighter" onclick="highlightSelectedText()" title="Select text in the passage, then click Highlight" class="hidden flex-col sm:flex-row items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-yellow-50 text-slate-700 text-xs font-semibold transition cursor-pointer">
+          <i data-lucide="highlighter" class="w-4 h-4 text-amber-600"></i>
+          <span class="hidden md:inline">Highlight</span>
+        </button>
+
+        <!-- Clear Highlights (Visible on RW) -->
+        <button id="btn-clear-highlights" onclick="clearPassageHighlights()" title="Clear highlights on this passage" class="hidden sm:flex items-center gap-1 px-2 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-600 text-xs font-medium transition cursor-pointer">
+          <i data-lucide="eraser" class="w-3.5 h-3.5"></i>
+        </button>
+
+        <!-- Calculator Button (Visible on Math) -->
+        <button id="btn-calculator" onclick="toggleModal('calculator-modal')" class="flex-col sm:flex-row items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-blue-50 text-slate-800 text-xs font-semibold transition cursor-pointer">
+          <i data-lucide="calculator" class="w-4 h-4 text-blue-700"></i>
+          <span class="hidden md:inline">Calculator</span>
+        </button>
+
+        <!-- Math Reference Sheet Button (Visible on Math) -->
+        <button id="btn-reference" onclick="toggleModal('reference-modal')" class="flex-col sm:flex-row items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-blue-50 text-slate-800 text-xs font-semibold transition cursor-pointer">
+          <i data-lucide="ruler" class="w-4 h-4 text-indigo-700"></i>
+          <span class="hidden md:inline">Reference</span>
+        </button>
+
+        <!-- Finish / Submit Module -->
+        <button onclick="openEndModuleConfirm()" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300 text-slate-700 text-xs font-semibold transition cursor-pointer">
+          <span class="hidden sm:inline">Finish Module</span>
+          <i data-lucide="log-out" class="w-4 h-4 sm:hidden"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Bluebook Dashed Top Border -->
+    <div class="h-1 w-full bluebook-dashed-top shrink-0"></div>
+
+    <!-- Main Question Workspace -->
+    <main id="workspace-container" class="flex-1 overflow-y-auto">
+      <div id="question-stage" class="h-full max-w-7xl mx-auto"></div>
+    </main>
+
+    <!-- Bluebook Dashed Bottom Border -->
+    <div class="h-1 w-full bluebook-dashed-bottom shrink-0"></div>
+
+    <!-- Bottom Navigation Footer -->
+    <footer class="bg-[#f1f5f9] border-t border-slate-300 px-3 sm:px-6 py-2.5 flex items-center justify-between shrink-0 z-20">
+      <div class="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-600">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span id="footer-domain-label">Algebra</span>
+      </div>
+
+      <button onclick="toggleNavigatorDrawer()" class="mx-auto sm:mx-0 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition cursor-pointer">
+        <span id="nav-drawer-label">Question 1 of 6</span>
+        <i data-lucide="chevron-up" class="w-4 h-4"></i>
+      </button>
+
+      <div class="flex items-center gap-2">
+        <button id="btn-prev-q" onclick="navigateQuestion(-1)" class="px-4 py-2 rounded-full border border-[#1e3a8a] text-[#1e3a8a] hover:bg-blue-50 disabled:opacity-40 disabled:pointer-events-none font-bold text-xs sm:text-sm transition cursor-pointer">
+          Back
+        </button>
+        <button id="btn-next-q" onclick="navigateQuestion(1)" class="px-5 py-2 rounded-full bg-[#1e3a8a] hover:bg-blue-900 text-white font-bold text-xs sm:text-sm shadow-sm transition cursor-pointer">
+          Next
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- =====================================================================
+       QUESTION NAVIGATOR DRAWER
+  ====================================================================== -->
+  <div id="navigator-drawer" class="hidden fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 backdrop-blur-[1px]" onclick="if (event.target === this) toggleNavigatorDrawer()">
+    <div class="bg-white w-full max-w-xl rounded-t-2xl sm:rounded-2xl sm:mb-16 border border-slate-200 shadow-2xl p-6">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+        <h3 id="drawer-module-title" class="font-bold text-slate-900 text-base">
+          Module Questions
+        </h3>
+        <button onclick="toggleNavigatorDrawer()" class="p-1 rounded-lg hover:bg-slate-100 text-slate-500 cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-600 mb-5 bg-slate-50 py-2 px-3 rounded-lg border border-slate-200">
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded ring-2 ring-slate-900 inline-block"></span>
+          <span>Current</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded bg-[#1e3a8a] inline-block"></span>
+          <span>Answered</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3.5 h-3.5 rounded border border-slate-300 bg-white inline-block"></span>
+          <span>Unanswered</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <i data-lucide="bookmark" class="w-3.5 h-3.5 text-rose-600 fill-rose-600"></i>
+          <span>For Review</span>
+        </div>
+      </div>
+
+      <div id="navigator-grid" class="grid grid-cols-6 gap-2.5 mb-6"></div>
+
+      <div class="flex justify-between items-center pt-3 border-t border-slate-200">
+        <span id="drawer-summary-text" class="text-xs font-medium text-slate-500">0 of 6 Answered</span>
+        <button onclick="toggleNavigatorDrawer(); openEndModuleConfirm();" class="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">
+          Submit Module
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MODAL: END MODULE CONFIRMATION
+  ====================================================================== -->
+  <div id="confirm-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+    <div class="bg-white max-w-md w-full rounded-2xl border border-slate-200 shadow-2xl p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        </div>
+        <h3 class="font-bold text-slate-900 text-lg">Finish Current Module?</h3>
+      </div>
+      <p id="confirm-modal-text" class="text-sm text-slate-600 mb-6 leading-relaxed">
+        Once you submit this module, you cannot return to review or change your answers.
+      </p>
+      <div class="flex justify-end gap-2.5">
+        <button onclick="toggleModal('confirm-modal')" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold text-sm cursor-pointer">
+          Keep Working
+        </button>
+        <button onclick="toggleModal('confirm-modal'); completeCurrentModule();" class="px-5 py-2 rounded-xl bg-[#1e3a8a] hover:bg-blue-900 text-white font-semibold text-sm cursor-pointer">
+          Submit Module
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MODAL: DIRECTIONS
+  ====================================================================== -->
+  <div id="directions-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4" onclick="if (event.target === this) toggleDirectionsModal()">
+    <div class="bg-white max-w-xl w-full rounded-2xl border border-slate-200 shadow-2xl p-6">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+        <h3 id="directions-title" class="font-bold text-slate-900 text-lg">Section Directions</h3>
+        <button onclick="toggleDirectionsModal()" class="p-1 rounded-lg hover:bg-slate-100 text-slate-500 cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="directions-body" class="text-sm text-slate-700 space-y-3 leading-relaxed mb-6"></div>
+      <div class="flex justify-end">
+        <button onclick="toggleDirectionsModal()" class="px-5 py-2 rounded-xl bg-[#1e3a8a] text-white font-semibold text-sm cursor-pointer">
+          Close Directions
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MODAL: GRAPHING & SCIENTIFIC CALCULATOR
+  ====================================================================== -->
+  <div id="calculator-modal" class="hidden fixed bottom-16 right-4 sm:right-8 z-40 w-[92vw] sm:w-[420px] bg-white rounded-2xl border border-slate-300 shadow-2xl overflow-hidden flex flex-col">
+    <div class="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i data-lucide="calculator" class="w-4 h-4 text-blue-400"></i>
+        <span class="font-bold text-xs tracking-wide uppercase">SAT Graphing & Scientific Calculator</span>
+      </div>
+      <button onclick="toggleModal('calculator-modal')" class="text-slate-300 hover:text-white cursor-pointer">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <div class="flex border-b border-slate-200 bg-slate-50 text-xs font-bold">
+      <button id="calc-tab-sci" onclick="switchCalcTab('sci')" class="flex-1 py-2 text-blue-700 border-b-2 border-blue-700 bg-white cursor-pointer">
+        Scientific
+      </button>
+      <button id="calc-tab-graph" onclick="switchCalcTab('graph')" class="flex-1 py-2 text-slate-500 hover:text-slate-800 cursor-pointer">
+        Graphing f(x)
+      </button>
+    </div>
+
+    <!-- Scientific Pane -->
+    <div id="calc-pane-sci" class="p-3.5">
+      <div class="bg-slate-100 border border-slate-300 rounded-xl p-2.5 mb-3 text-right">
+        <input id="calc-input" type="text" placeholder="e.g. (3^2 + 4^2)^(0.5)" class="w-full bg-transparent text-right font-mono text-sm text-slate-700 focus:outline-none mb-1" onkeydown="if (event.key === 'Enter') evaluateCalc()" />
+        <div id="calc-output" class="font-mono font-bold text-xl text-slate-900 h-7 overflow-x-auto">0</div>
+      </div>
+
+      <div class="grid grid-cols-5 gap-1.5 text-xs font-semibold">
+        <button onclick="appendCalc('sin(')" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">sin</button>
+        <button onclick="appendCalc('cos(')" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">cos</button>
+        <button onclick="appendCalc('tan(')" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">tan</button>
+        <button onclick="appendCalc('Math.PI')" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">π</button>
+        <button onclick="clearCalc()" class="p-2 rounded bg-rose-100 text-rose-700 hover:bg-rose-200 font-bold cursor-pointer">AC</button>
+
+        <button onclick="appendCalc('Math.sqrt(')" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">√</button>
+        <button onclick="appendCalc('**')" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">xʸ</button>
+        <button onclick="appendCalc('(')" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">(</button>
+        <button onclick="appendCalc(')')" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">)</button>
+        <button onclick="appendCalc('/')" class="p-2 rounded bg-blue-50 text-blue-800 hover:bg-blue-100 font-bold cursor-pointer">÷</button>
+
+        <button onclick="appendCalc('7')" class="p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">7</button>
+        <button onclick="appendCalc('8')" class="p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">8</button>
+        <button onclick="appendCalc('9')" class="p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">9</button>
+        <button onclick="backspaceCalc()" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">⌫</button>
+        <button onclick="appendCalc('*')" class="p-2 rounded bg-blue-50 text-blue-800 hover:bg-blue-100 font-bold cursor-pointer">×</button>
+
+        <button onclick="appendCalc('4')" class="p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">4</button>
+        <button onclick="appendCalc('5')" class="p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">5</button>
+        <button onclick="appendCalc('6')" class="p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">6</button>
+        <button onclick="appendCalc('Math.log10(')" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">log</button>
+        <button onclick="appendCalc('-')" class="p-2 rounded bg-blue-50 text-blue-800 hover:bg-blue-100 font-bold cursor-pointer">−</button>
+
+        <button onclick="appendCalc('1')" class="p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">1</button>
+        <button onclick="appendCalc('2')" class="p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">2</button>
+        <button onclick="appendCalc('3')" class="p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">3</button>
+        <button onclick="appendCalc('Math.abs(')" class="p-2 rounded bg-slate-100 hover:bg-slate-200 cursor-pointer">|x|</button>
+        <button onclick="appendCalc('+')" class="p-2 rounded bg-blue-50 text-blue-800 hover:bg-blue-100 font-bold cursor-pointer">+</button>
+
+        <button onclick="appendCalc('0')" class="col-span-2 p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">0</button>
+        <button onclick="appendCalc('.')" class="p-2.5 rounded bg-white border border-slate-200 hover:bg-slate-50 text-sm cursor-pointer">.</button>
+        <button onclick="evaluateCalc()" class="col-span-2 p-2.5 rounded bg-[#1e3a8a] text-white hover:bg-blue-900 font-bold text-sm cursor-pointer">=</button>
+      </div>
+    </div>
+
+    <!-- Graphing Pane -->
+    <div id="calc-pane-graph" class="hidden p-3.5">
+      <div class="flex gap-2 mb-2.5">
+        <div class="flex-1 flex items-center border border-slate-300 rounded-lg px-2.5 bg-slate-50">
+          <span class="font-mono text-xs font-bold text-blue-700 mr-1.5">f(x) =</span>
+          <input id="graph-fn-input" type="text" value="x^2 - 4" placeholder="e.g. 2*x + 1 or x^2 - 4" class="w-full py-1.5 bg-transparent font-mono text-xs focus:outline-none" onkeydown="if (event.key === 'Enter') plotGraph()" />
+        </div>
+        <button onclick="plotGraph()" class="px-3 py-1.5 rounded-lg bg-[#1e3a8a] text-white text-xs font-bold hover:bg-blue-900 cursor-pointer">
+          Plot
+        </button>
+      </div>
+      <div class="border border-slate-200 rounded-xl overflow-hidden bg-white">
+        <canvas id="graph-canvas" width="380" height="220" class="w-full h-[220px] block"></canvas>
+      </div>
+      <p class="text-[11px] text-slate-500 mt-2">
+        Supports <code class="bg-slate-100 px-1 rounded">x^2</code>, <code class="bg-slate-100 px-1 rounded">sin(x)</code>, <code class="bg-slate-100 px-1 rounded">sqrt(x)</code>, <code class="bg-slate-100 px-1 rounded">abs(x)</code>. Grid: −10 to 10 on x.
+      </p>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MODAL: MATH REFERENCE SHEET
+  ====================================================================== -->
+  <div id="reference-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4" onclick="if (event.target === this) toggleModal('reference-modal')">
+    <div class="bg-white max-w-2xl w-full rounded-2xl border border-slate-200 shadow-2xl p-6 max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+        <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
+          <i data-lucide="ruler" class="w-5 h-5 text-indigo-700"></i>
+          Official SAT Math Reference Sheet
+        </h3>
+        <button onclick="toggleModal('reference-modal')" class="p-1 rounded-lg hover:bg-slate-100 text-slate-500 cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-bold text-slate-900 mb-1">Circle</div>
+          <p class="text-slate-700">Area: \(A = \pi r^2\)</p>
+          <p class="text-slate-700">Circumference: \(C = 2\pi r\)</p>
+          <p class="text-xs text-slate-500 mt-1">Arc measure = \(360^\circ\) • \(2\pi\) radians</p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-bold text-slate-900 mb-1">Rectangle & Triangle</div>
+          <p class="text-slate-700">Rectangle Area: \(A = lw\)</p>
+          <p class="text-slate-700">Triangle Area: \(A = \frac{1}{2}bh\)</p>
+          <p class="text-xs text-slate-500 mt-1">Sum of angles in a triangle = \(180^\circ\)</p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-bold text-slate-900 mb-1">Right Triangles</div>
+          <p class="text-slate-700">Pythagorean Theorem: \(a^2 + b^2 = c^2\)</p>
+          <p class="text-slate-700">\(30^\circ\text{-}60^\circ\text{-}90^\circ\): sides \(x, x\sqrt{3}, 2x\)</p>
+          <p class="text-slate-700">\(45^\circ\text{-}45^\circ\text{-}90^\circ\): sides \(x, x, x\sqrt{2}\)</p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="font-bold text-slate-900 mb-1">3D Solids Volume</div>
+          <p class="text-slate-700">Rectangular Prism: \(V = lwh\)</p>
+          <p class="text-slate-700">Cylinder: \(V = \pi r^2 h\)</p>
+          <p class="text-slate-700">Sphere: \(V = \frac{4}{3}\pi r^3\) • Cone: \(V = \frac{1}{3}\pi r^2 h\)</p>
+          <p class="text-slate-700">Pyramid: \(V = \frac{1}{3}lwh\)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       VIEW 4: POST-TEST SCORE REPORT DASHBOARD
+  ====================================================================== -->
+  <div id="report-view" class="hidden flex-1 flex flex-col bg-slate-50">
+    <header class="bg-white border-b border-slate-200 px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-20">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-[#1e3a8a] text-white flex items-center justify-center font-extrabold text-lg">
+          B
+        </div>
+        <div>
+          <span class="font-bold text-slate-900 text-lg">Official Practice Score Report</span>
+          <span class="hidden sm:inline-block ml-2 text-xs text-slate-500" id="report-date"></span>
+        </div>
+      </div>
+      <button onclick="resetToLanding()" class="px-4 py-2 rounded-xl bg-[#1e3a8a] hover:bg-blue-900 text-white text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 cursor-pointer">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        <span>Take Another Test</span>
+      </button>
+    </header>
+
+    <main class="max-w-6xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+      <!-- Top Score Summary Cards -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Primary / Composite Score Card -->
+        <div class="bg-gradient-to-br from-[#1e3a8a] to-indigo-900 text-white rounded-2xl p-6 sm:p-8 shadow-lg flex flex-col justify-between">
+          <div>
+            <div id="score-primary-label" class="text-xs font-bold uppercase tracking-wider text-blue-200 mb-1">
+              Total Scaled Score
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span id="score-total" class="text-5xl sm:text-6xl font-extrabold tracking-tight">1420</span>
+              <span id="score-total-denom" class="text-blue-200 font-medium text-lg">/ 1600</span>
+            </div>
+            <p id="score-percentile-text" class="text-sm text-blue-100 mt-3">
+              Adaptive MST Score Calculation
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/15 flex items-center justify-between text-xs text-blue-100">
+            <span>Raw Accuracy: <strong id="score-raw-acc">0/0 (0%)</strong></span>
+            <span id="score-mode-badge" class="px-2.5 py-0.5 rounded-full bg-white/15 font-semibold">Full Simulation</span>
+          </div>
+        </div>
+
+        <!-- Reading & Writing Section Score -->
+        <div id="card-rw-score" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-700">Reading & Writing</span>
+              <span id="rw-route-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                M1 → Harder M2
+              </span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-3">
+              <span id="score-rw" class="text-4xl font-extrabold text-slate-900">—</span>
+              <span class="text-slate-400 font-medium">/ 800</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden mb-3">
+              <div id="bar-rw" class="bg-blue-600 h-full rounded-full" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="text-xs text-slate-500 flex justify-between pt-3 border-t border-slate-100">
+            <span>Correct: <strong id="rw-correct-count" class="text-slate-800">Not Taken</strong></span>
+            <span>Scale Range: 200–800</span>
+          </div>
+        </div>
+
+        <!-- Math Section Score -->
+        <div id="card-math-score" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Math</span>
+              <span id="math-route-badge" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                M1 → Harder M2
+              </span>
+            </div>
+            <div class="flex items-baseline gap-2 mb-3">
+              <span id="score-math" class="text-4xl font-extrabold text-slate-900">—</span>
+              <span class="text-slate-400 font-medium">/ 800</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden mb-3">
+              <div id="bar-math" class="bg-emerald-600 h-full rounded-full" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="text-xs text-slate-500 flex justify-between pt-3 border-t border-slate-100">
+            <span>Correct: <strong id="math-correct-count" class="text-slate-800">Not Taken</strong></span>
+            <span>Scale Range: 200–800</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Domain Breakdown -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+        <h3 class="text-lg font-bold text-slate-900 mb-1">Knowledge & Skills Domain Breakdown</h3>
+        <p class="text-xs text-slate-500 mb-6">Review accuracy across each tested domain to target future practice.</p>
+        <div id="domain-bars-container" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5"></div>
+      </div>
+
+      <!-- Detailed Question-by-Question Review -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200 mb-6">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Question-by-Question Review & Explanations</h3>
+            <p class="text-xs text-slate-500">Filter by incorrect or flagged questions and read step-by-step solutions.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="filterReview('all')" id="filter-all" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#1e3a8a] text-white cursor-pointer">
+              All Questions
+            </button>
+            <button onclick="filterReview('incorrect')" id="filter-incorrect" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer">
+              Incorrect Only
+            </button>
+            <button onclick="filterReview('flagged')" id="filter-flagged" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer">
+              Flagged for Review
+            </button>
+          </div>
+        </div>
+
+        <div id="review-list-container" class="space-y-6"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- =====================================================================
+       CONFIGURATION, QUESTION BANK & APPLICATION LOGIC
+  ====================================================================== -->
+  <script>
+    /**
+     * EASY-TO-EDIT TEST CONFIGURATION CONSTANTS
+     * Adjust module durations (in seconds), low-time warning threshold,
+     * break duration, and Module 1 -> Module 2 adaptive accuracy threshold here.
+     */
+    const EXAM_CONFIG = {
+      timers: {
+        rwModuleSeconds: 8 * 60,       // Change to 32 * 60 for official 32-min RW modules
+        mathModuleSeconds: 9 * 60,     // Change to 35 * 60 for official 35-min Math modules
+        breakSeconds: 10 * 60          // Optional 10-minute break between RW and Math in Full mode
+      },
+      lowTimeWarningSeconds: 5 * 60,   // Timer turns red at or below 5 minutes (300s)
+      adaptiveThreshold: 0.65          // 65% (e.g., 4/6) on Module 1 routes to Harder Module 2
+    };
+
+    /**
+     * QUESTION BANK
+     * Add, edit, or remove questions inside:
+     * - rw_m1, rw_m2_easy, rw_m2_hard
+     * - math_m1, math_m2_easy, math_m2_hard
+     */
+    const QUESTION_BANK = {
+      rw_m1: [
+        {
+          id: "RW-M1-1",
+          section: "rw",
+          domain: "Craft & Structure",
+          skill: "Words in Context",
+          type: "mc",
+          passage: "During the late nineteenth century, marine biologists assumed that the abyssal zone of the ocean—depths below 4,000 meters—was largely devoid of complex life due to crushing pressure and perpetual darkness. However, deep-sea submersibles in the 1970s revealed thriving hydrothermal vent ecosystems, thereby ______ the long-standing consensus among oceanographers.",
+          prompt: "Which choice completes the text with the most logical and precise word or phrase?",
+          choices: ["corroborating", "upending", "ameliorating", "circumventing"],
+          correctAnswer: 1,
+          explanation: "Discovering thriving ecosystems in a zone thought lifeless overturned ('upended') the prior scientific consensus."
+        },
+        {
+          id: "RW-M1-2",
+          section: "rw",
+          domain: "Information & Ideas",
+          skill: "Central Ideas and Details",
+          type: "mc",
+          passage: "Unlike honeybees, which rely on a complex 'waggle dance' inside the hive to communicate the precise distance and direction of nectar-rich flowers to nestmates, solitary mason bees do not form colonies or recruit other bees. Instead, each female mason bee independently forages within a tight radius of roughly 100 meters from her nest, making her remarkably efficient at pollinating dense orchards.",
+          prompt: "According to the text, what is one way mason bees differ from honeybees?",
+          choices: [
+            "Mason bees travel significantly farther from their nests to locate blooming orchards.",
+            "Mason bees perform specialized dances outside the hive rather than inside.",
+            "Mason bees gather nectar independently rather than directing other bees to food sources.",
+            "Mason bees rely on colony cooperation to pollinate scattered wildflowers."
+          ],
+          correctAnswer: 2,
+          explanation: "The passage contrasts solitary mason bees foraging independently with honeybees that recruit nestmates and communicate flower locations."
+        },
+        {
+          id: "RW-M1-3",
+          section: "rw",
+          domain: "Standard English Conventions",
+          skill: "Boundaries & Punctuation",
+          type: "mc",
+          passage: "In 1928, Scottish bacteriologist Alexander Fleming noticed that a mold contaminating one of his Petri dishes had inhibited the growth of surrounding bacteria. This accidental observation led to the isolation of ______ the world's first broadly effective antibiotic.",
+          prompt: "Which choice completes the text so that it conforms to the conventions of Standard English?",
+          choices: ["penicillin;", "penicillin:", "penicillin,", "penicillin"],
+          correctAnswer: 2,
+          explanation: "A comma after 'penicillin' sets off the nonrestrictive appositive phrase renaming penicillin."
+        },
+        {
+          id: "RW-M1-4",
+          section: "rw",
+          domain: "Standard English Conventions",
+          skill: "Form, Structure, and Sense",
+          type: "mc",
+          passage: "The intricate acoustic properties of the ancient theater at Epidaurus, constructed in the fourth century BCE, ______ puzzled architectural historians for decades until researchers discovered that the stepped limestone seating acts as a natural low-frequency sound filter.",
+          prompt: "Which choice completes the text so that it conforms to the conventions of Standard English?",
+          choices: ["has", "have", "was", "is"],
+          correctAnswer: 1,
+          explanation: "The subject 'properties' is plural, requiring the plural auxiliary verb 'have'."
+        },
+        {
+          id: "RW-M1-5",
+          section: "rw",
+          domain: "Expression of Ideas",
+          skill: "Transitions",
+          type: "mc",
+          passage: "Urban green roofs—rooftops covered with vegetation—reduce building cooling costs by absorbing solar radiation and insulating interior spaces. ______ they capture up to 70% of rainwater during heavy storms, easing strain on municipal drainage systems.",
+          prompt: "Which choice completes the text with the most logical transition?",
+          choices: ["Nevertheless,", "Consequently,", "Furthermore,", "Conversely,"],
+          correctAnswer: 2,
+          explanation: "'Furthermore,' adds a second environmental benefit of green roofs to the cooling benefit already stated."
+        },
+        {
+          id: "RW-M1-6",
+          section: "rw",
+          domain: "Expression of Ideas",
+          skill: "Rhetorical Synthesis",
+          type: "mc",
+          passage: "While researching bioluminescent fungi, a student took the following notes:<br>• Over 100 species of fungi emit a greenish glow known as foxfire.<br>• The glow is produced by a chemical reaction between luciferase and luciferin.<br>• Botanist Dennis Desjardin hypothesized that this light attracts nocturnal insects.<br>• When insects land on the glowing mushrooms, fungal spores stick to their bodies and are dispersed across the forest.",
+          prompt: "The student wants to explain the ecological purpose of bioluminescence in fungi according to Dennis Desjardin. Which choice most effectively uses relevant information from the notes?",
+          choices: [
+            "Bioluminescent fungi emit a greenish glow called foxfire through a reaction involving luciferase and luciferin.",
+            "According to Dennis Desjardin, fungi glow at night to attract nocturnal insects that help spread their spores through the forest.",
+            "Over 100 species of fungi produce foxfire, a phenomenon studied by botanist Dennis Desjardin.",
+            "Nocturnal insects frequently land on mushrooms in forests, where chemical reactions produce greenish light."
+          ],
+          correctAnswer: 1,
+          explanation: "Choice B links Dennis Desjardin's hypothesis with the ecological function of attracting insects to disperse spores."
+        }
+      ],
+
+      rw_m2_easy: [
+        {
+          id: "RW-M2E-1",
+          section: "rw",
+          domain: "Craft & Structure",
+          skill: "Words in Context",
+          type: "mc",
+          passage: "Although the novelist's early short stories received lukewarm reviews from literary critics, her 2019 historical epic was met with ______ acclaim, winning three major international book awards within six months of publication.",
+          prompt: "Which choice completes the text with the most logical and precise word or phrase?",
+          choices: ["tepid", "resounding", "ambiguous", "negligible"],
+          correctAnswer: 1,
+          explanation: "'Although' contrasts 'lukewarm reviews' with winning three international awards, making 'resounding' the precise fit."
+        },
+        {
+          id: "RW-M2E-2",
+          section: "rw",
+          domain: "Information & Ideas",
+          skill: "Command of Evidence",
+          type: "mc",
+          passage: "Archaeologists studying Neolithic settlements in Anatolia hypothesized that early farmers domesticated wild barley primarily to bake bread. However, residue analysis of stone vessels revealed high concentrations of fermented grain starches, leading researchers to conclude that brewing may have preceded breadmaking.",
+          prompt: "Which finding, if true, would most directly support the researchers' conclusion?",
+          choices: [
+            "Fermentation vessels at the site date back 2,000 years earlier than any known baking ovens in the region.",
+            "Modern barley varieties contain higher protein levels than wild Anatolian barley.",
+            "Neolithic farmers in Anatolia also domesticated sheep and goats during the same period.",
+            "Bread made from wild barley spoils faster than bread made from domesticated wheat."
+          ],
+          correctAnswer: 0,
+          explanation: "Fermentation vessels predating baking ovens by 2,000 years directly supports brewing coming before breadmaking."
+        },
+        {
+          id: "RW-M2E-3",
+          section: "rw",
+          domain: "Standard English Conventions",
+          skill: "Boundaries & Punctuation",
+          type: "mc",
+          passage: "Marine ecologist Dr. Sylvia Earle has spent over seven decades exploring Earth's ______ she has led more than a hundred oceanographic expeditions and logged over 7,500 hours underwater.",
+          prompt: "Which choice completes the text so that it conforms to the conventions of Standard English?",
+          choices: ["oceans,", "oceans", "oceans;", "oceans and"],
+          correctAnswer: 2,
+          explanation: "A semicolon joins two related independent clauses without creating a comma splice."
+        },
+        {
+          id: "RW-M2E-4",
+          section: "rw",
+          domain: "Standard English Conventions",
+          skill: "Form, Structure, and Sense",
+          type: "mc",
+          passage: "Before launching the James Webb Space Telescope in December 2021, NASA engineers ______ its eighteen gold-plated beryllium mirror segments through months of cryogenic vacuum testing.",
+          prompt: "Which choice completes the text so that it conforms to the conventions of Standard English?",
+          choices: ["putting", "put", "have put", "will put"],
+          correctAnswer: 1,
+          explanation: "The simple past tense 'put' matches the past-time context of the December 2021 launch."
+        },
+        {
+          id: "RW-M2E-5",
+          section: "rw",
+          domain: "Expression of Ideas",
+          skill: "Transitions",
+          type: "mc",
+          passage: "Classical pianists traditionally memorize entire concertos before performing them with an orchestra. ______ chamber musicians almost always perform with sheet music on stage to coordinate ensemble entries.",
+          prompt: "Which choice completes the text with the most logical transition?",
+          choices: ["In contrast,", "Similarly,", "Therefore,", "For instance,"],
+          correctAnswer: 0,
+          explanation: "'In contrast,' signals the difference between soloists memorizing concertos and chamber players using sheet music."
+        },
+        {
+          id: "RW-M2E-6",
+          section: "rw",
+          domain: "Expression of Ideas",
+          skill: "Rhetorical Synthesis",
+          type: "mc",
+          passage: "While researching energy storage, a student took the following notes:<br>• Pumped-storage hydropower accounts for over 90% of utility-scale storage worldwide.<br>• Excess electricity pumps water uphill into an elevated reservoir.<br>• Releasing water downhill through turbines generates power during peak demand.<br>• Unlike lithium-ion batteries, pumped-storage facilities can operate for over 50 years without capacity degradation.",
+          prompt: "The student wants to highlight an advantage of pumped-storage hydropower over lithium-ion batteries. Which choice best accomplishes this?",
+          choices: [
+            "Pumped-storage hydropower generates electricity by releasing water downhill through turbines during peak demand.",
+            "Accounting for over 90% of utility-scale storage, pumped-storage hydropower relies on elevated water reservoirs.",
+            "Unlike lithium-ion batteries, pumped-storage hydropower facilities can operate for over five decades without losing storage capacity.",
+            "Both pumped-storage hydropower and lithium-ion batteries store excess electricity."
+          ],
+          correctAnswer: 2,
+          explanation: "Choice C directly compares the two technologies and states the longevity advantage of pumped-storage hydropower."
+        }
+      ],
+
+      rw_m2_hard: [
+        {
+          id: "RW-M2H-1",
+          section: "rw",
+          domain: "Craft & Structure",
+          skill: "Words in Context",
+          type: "mc",
+          passage: "Philosopher Martha Nussbaum contends that public policy frameworks focused exclusively on gross domestic product offer an ______ measure of human flourishing, as aggregate economic output fails to capture disparities in healthcare, education, and political agency.",
+          prompt: "Which choice completes the text with the most logical and precise word or phrase?",
+          choices: ["infallible", "impoverished", "ostentatious", "unequivocal"],
+          correctAnswer: 1,
+          explanation: "'Impoverished' here means deficient or lacking completeness because GDP omits key dimensions of human well-being."
+        },
+        {
+          id: "RW-M2H-2",
+          section: "rw",
+          domain: "Craft & Structure",
+          skill: "Cross-Text Connections",
+          type: "mc",
+          passage: "<strong>Text 1:</strong> Linguist Lera Boroditsky argues that grammatical structures subtly shape habitual thought, noting that speakers of languages using cardinal directions maintain strong internal compasses even indoors.<br><br><strong>Text 2:</strong> Psycholinguist John McWhorter cautions against overstating grammatical determinism, observing that English speakers can learn cardinal orientation readily without grammar shifts, pointing to environment rather than syntax.",
+          prompt: "How would McWhorter (Text 2) most likely respond to Boroditsky's claim in Text 1?",
+          choices: [
+            "By arguing that speakers who use cardinal directions actually rely on egocentric cues indoors.",
+            "By suggesting that spatial orientation stems primarily from environmental practice rather than grammatical structure.",
+            "By asserting that English grammar prevents speakers from developing strong cardinal orientation.",
+            "By agreeing that grammatical categories are the sole driver of spatial cognition."
+          ],
+          correctAnswer: 1,
+          explanation: "Text 2 attributes spatial orientation to environment rather than syntax, directly qualifying Text 1's grammar-focused claim."
+        },
+        {
+          id: "RW-M2H-3",
+          section: "rw",
+          domain: "Information & Ideas",
+          skill: "Inferences",
+          type: "mc",
+          passage: "In salt marshes, cordgrass secretes excess salt through leaf glands. When researchers excluded fiddler crabs from marsh plots, soil salinity rose 40% and cordgrass biomass fell by half—even though the crabs do not eat cordgrass. Core samples showed crab burrows aerate sediment and flush salts during tides. Thus, researchers inferred that ______",
+          prompt: "Which choice most logically completes the text?",
+          choices: [
+            "cordgrass depends on fiddler crabs to pollinate flowers at low tide.",
+            "fiddler crabs indirectly support cordgrass growth by modifying soil conditions through burrowing.",
+            "soil salinity rises only when cordgrass stops secreting salt.",
+            "fiddler crabs prefer areas with the highest possible salinity."
+          ],
+          correctAnswer: 1,
+          explanation: "Crab burrowing flushes salts and aerates sediment, indirectly benefiting cordgrass health."
+        },
+        {
+          id: "RW-M2H-4",
+          section: "rw",
+          domain: "Standard English Conventions",
+          skill: "Boundaries & Punctuation",
+          type: "mc",
+          passage: "Published in 1962, marine biologist Rachel Carson's <em>Silent Spring</em> documented the ecological hazards of indiscriminate pesticide ______ galvanized the modern environmental movement and prompted federal restrictions on DDT.",
+          prompt: "Which choice completes the text so that it conforms to the conventions of Standard English?",
+          choices: ["use, and", "use; it", "use,", "use it"],
+          correctAnswer: 1,
+          explanation: "A semicolon followed by the subject pronoun 'it' properly joins two independent clauses."
+        },
+        {
+          id: "RW-M2H-5",
+          section: "rw",
+          domain: "Standard English Conventions",
+          skill: "Form, Structure, and Sense",
+          type: "mc",
+          passage: "Among the artifacts recovered from the twelfth-century shipwreck off Java ______ a collection of glazed celadon ceramics whose chemical composition traced them to kilns in southern China.",
+          prompt: "Which choice completes the text so that it conforms to the conventions of Standard English?",
+          choices: ["were", "was", "have been", "are"],
+          correctAnswer: 1,
+          explanation: "The singular subject 'a collection' follows the verb in this inverted sentence, requiring past-tense singular 'was'."
+        },
+        {
+          id: "RW-M2H-6",
+          section: "rw",
+          domain: "Expression of Ideas",
+          skill: "Transitions",
+          type: "mc",
+          passage: "Physicists predicted the Higgs boson in 1964 to explain how particles acquire mass. ______ confirming the particle experimentally required nearly five decades and the 27-kilometer Large Hadron Collider.",
+          prompt: "Which choice completes the text with the most logical transition?",
+          choices: ["Accordingly,", "Yet,", "In other words,", "Likewise,"],
+          correctAnswer: 1,
+          explanation: "'Yet,' highlights the contrast between the early theoretical prediction and decades of experimental effort."
+        }
+      ],
+
+      math_m1: [
+        {
+          id: "MATH-M1-1",
+          section: "math",
+          domain: "Algebra",
+          skill: "Linear Equations",
+          type: "mc",
+          prompt: "If \\(4(2x - 3) + 5 = 3x + 13\\), what is the value of \\(2x\\)?",
+          choices: ["\\(4\\)", "\\(8\\)", "\\(12\\)", "\\(16\\)"],
+          correctAnswer: 1,
+          explanation: "Simplify: \\(8x - 7 = 3x + 13 \\implies 5x = 20 \\implies x = 4\\). Therefore, \\(2x = 8\\)."
+        },
+        {
+          id: "MATH-M1-2",
+          section: "math",
+          domain: "Algebra",
+          skill: "Systems of Equations",
+          type: "mc",
+          prompt: "A coffee roaster sells House Blend for \\(\\$12\\)/lb and Single-Origin Blend for \\(\\$18\\)/lb. Yesterday, \\(30\\) pounds total were sold for \\(\\$432\\). How many pounds of Single-Origin Blend were sold?",
+          choices: ["\\(10\\)", "\\(12\\)", "\\(18\\)", "\\(20\\)"],
+          correctAnswer: 1,
+          explanation: "With \\(h + s = 30\\) and \\(12h + 18s = 432\\), substitute \\(h = 30 - s\\): \\(360 + 6s = 432 \\implies s = 12\\)."
+        },
+        {
+          id: "MATH-M1-3",
+          section: "math",
+          domain: "Advanced Math",
+          skill: "Quadratic Functions",
+          type: "mc",
+          prompt: "The function \\(f\\) is defined by \\(f(x) = 3(x - 4)^2 - 11\\). What is the minimum value of \\(f(x)\\)?",
+          choices: ["\\(-11\\)", "\\(-4\\)", "\\(3\\)", "\\(4\\)"],
+          correctAnswer: 0,
+          explanation: "In vertex form \\(a(x - h)^2 + k\\) with \\(a > 0\\), the minimum value is \\(k = -11\\)."
+        },
+        {
+          id: "MATH-M1-4",
+          section: "math",
+          domain: "Problem-Solving & Data Analysis",
+          skill: "Percentages",
+          type: "spr",
+          prompt: "After a \\(20\\%\\) discount on a laptop, the sale price is \\(\\$680\\). What was the original price in dollars?",
+          correctAnswer: ["850", "$850", "850.00"],
+          explanation: "\\(0.80P = 680 \\implies P = 680 / 0.80 = 850\\)."
+        },
+        {
+          id: "MATH-M1-5",
+          section: "math",
+          domain: "Geometry & Trigonometry",
+          skill: "Right Triangle Trig",
+          type: "mc",
+          prompt: "In right triangle \\(ABC\\) with right angle \\(C\\), \\(\\sin(A) = \\frac{5}{13}\\). What is \\(\\cos(B)\\)?",
+          choices: ["\\(\\frac{5}{13}\\)", "\\(\\frac{12}{13}\\)", "\\(\\frac{5}{12}\\)", "\\(\\frac{12}{5}\\)"],
+          correctAnswer: 0,
+          explanation: "Since \\(A\\) and \\(B\\) are complementary angles (\\(A + B = 90^\\circ\\)), \\(\\cos(B) = \\sin(A) = \\frac{5}{13}\\)."
+        },
+        {
+          id: "MATH-M1-6",
+          section: "math",
+          domain: "Problem-Solving & Data Analysis",
+          skill: "Mean & Averages",
+          type: "spr",
+          prompt: "The mean of five numbers is \\(18\\). When a sixth number is added, the mean of all six numbers is \\(21\\). What is the sixth number?",
+          correctAnswer: ["36"],
+          explanation: "Total of six numbers = \\(6 \\times 21 = 126\\). Total of first five = \\(5 \\times 18 = 90\\). Sixth number = \\(126 - 90 = 36\\)."
+        }
+      ],
+
+      math_m2_easy: [
+        {
+          id: "MATH-M2E-1",
+          section: "math",
+          domain: "Algebra",
+          skill: "Slope",
+          type: "mc",
+          prompt: "Line \\(k\\) passes through \\((2, 5)\\) and \\((6, 17)\\) in the \\(xy\\)-plane. What is the slope of line \\(k\\)?",
+          choices: ["\\(\\frac{1}{3}\\)", "\\(2\\)", "\\(3\\)", "\\(4\\)"],
+          correctAnswer: 2,
+          explanation: "\\(m = \\frac{17 - 5}{6 - 2} = \\frac{12}{4} = 3\\)."
+        },
+        {
+          id: "MATH-M2E-2",
+          section: "math",
+          domain: "Algebra",
+          skill: "Linear Inequalities",
+          type: "mc",
+          prompt: "Which value of \\(x\\) satisfies \\(3x - 7 > 11\\)?",
+          choices: ["\\(4\\)", "\\(5\\)", "\\(6\\)", "\\(7\\)"],
+          correctAnswer: 3,
+          explanation: "\\(3x > 18 \\implies x > 6\\), so \\(7\\) is a solution."
+        },
+        {
+          id: "MATH-M2E-3",
+          section: "math",
+          domain: "Advanced Math",
+          skill: "Polynomial Operations",
+          type: "mc",
+          prompt: "Which expression is equivalent to \\((3x^2 + 5x - 2) - (x^2 - 2x + 4)\\)?",
+          choices: ["\\(2x^2 + 3x + 2\\)", "\\(2x^2 + 7x - 6\\)", "\\(4x^2 + 3x - 6\\)", "\\(2x^2 + 7x + 2\\)"],
+          correctAnswer: 1,
+          explanation: "Distribute the minus sign and combine like terms: \\(2x^2 + 7x - 6\\)."
+        },
+        {
+          id: "MATH-M2E-4",
+          section: "math",
+          domain: "Problem-Solving & Data Analysis",
+          skill: "Rates & Proportions",
+          type: "spr",
+          prompt: "A printer prints \\(45\\) pages every \\(3\\) minutes at a constant rate. How many pages does it print in \\(14\\) minutes?",
+          correctAnswer: ["210"],
+          explanation: "Rate is \\(15\\) pages/minute. In \\(14\\) minutes: \\(15 \\times 14 = 210\\) pages."
+        },
+        {
+          id: "MATH-M2E-5",
+          section: "math",
+          domain: "Geometry & Trigonometry",
+          skill: "Circles",
+          type: "mc",
+          prompt: "A circle has circumference \\(16\\pi\\). What is its area?",
+          choices: ["\\(8\\pi\\)", "\\(16\\pi\\)", "\\(64\\pi\\)", "\\(256\\pi\\)"],
+          correctAnswer: 2,
+          explanation: "\\(2\\pi r = 16\\pi \\implies r = 8 \\implies \\text{Area} = \\pi(8)^2 = 64\\pi\\)."
+        },
+        {
+          id: "MATH-M2E-6",
+          section: "math",
+          domain: "Geometry & Trigonometry",
+          skill: "Triangle Angles",
+          type: "spr",
+          prompt: "In triangle \\(PQR\\), \\(\\angle P = 42^\\circ\\) and \\(\\angle Q = 73^\\circ\\). What is \\(\\angle R\\) in degrees?",
+          correctAnswer: ["65"],
+          explanation: "\\(180^\\circ - (42^\\circ + 73^\\circ) = 65^\\circ\\)."
+        }
+      ],
+
+      math_m2_hard: [
+        {
+          id: "MATH-M2H-1",
+          section: "math",
+          domain: "Algebra",
+          skill: "Systems with No Solution",
+          type: "spr",
+          prompt: "If the system \\(\\frac{2}{3}x - \\frac{1}{4}y = 7\\) and \\(kx - 3y = 19\\) has no solution, what is the value of constant \\(k\\)?",
+          correctAnswer: ["8"],
+          explanation: "Multiply the first equation by \\(12\\) to get \\(8x - 3y = 84\\). Matching the \\(x\\)-coefficient for parallel lines gives \\(k = 8\\)."
+        },
+        {
+          id: "MATH-M2H-2",
+          section: "math",
+          domain: "Advanced Math",
+          skill: "Discriminant",
+          type: "mc",
+          prompt: "The equation \\(2x^2 - 12x + c = 0\\) has exactly one real solution. What is \\(c\\)?",
+          choices: ["\\(9\\)", "\\(18\\)", "\\(36\\)", "\\(72\\)"],
+          correctAnswer: 1,
+          explanation: "Set discriminant \\(b^2 - 4ac = 0\\): \\((-12)^2 - 4(2)(c) = 0 \\implies 144 - 8c = 0 \\implies c = 18\\)."
+        },
+        {
+          id: "MATH-M2H-3",
+          section: "math",
+          domain: "Advanced Math",
+          skill: "Exponential Models",
+          type: "mc",
+          prompt: "A population is modeled by \\(P(t) = 450(1.08)^{\\frac{t}{3}}\\), where \\(t\\) is in hours. Which statement best interprets \\(1.08\\)?",
+          choices: [
+            "The population increases by \\(8\\%\\) every hour.",
+            "The population increases by \\(8\\%\\) every \\(3\\) hours.",
+            "The population increases by \\(1.08\\%\\) every \\(3\\) hours.",
+            "The initial population is \\(1,080\\)."
+          ],
+          correctAnswer: 1,
+          explanation: "Each \\(3\\)-hour period increases the exponent \\(\\frac{t}{3}\\) by \\(1\\), multiplying by \\(1.08\\) (an \\(8\\%\\) growth)."
+        },
+        {
+          id: "MATH-M2H-4",
+          section: "math",
+          domain: "Geometry & Trigonometry",
+          skill: "Circle Equations",
+          type: "mc",
+          prompt: "A circle has equation \\(x^2 + 6x + y^2 - 10y = 15\\). What is its radius?",
+          choices: ["\\(\\sqrt{15}\\)", "\\(7\\)", "\\(34\\)", "\\(49\\)"],
+          correctAnswer: 1,
+          explanation: "Complete the square: \\((x + 3)^2 + (y - 5)^2 = 15 + 9 + 25 = 49 \\implies r = 7\\)."
+        },
+        {
+          id: "MATH-M2H-5",
+          section: "math",
+          domain: "Problem-Solving & Data Analysis",
+          skill: "Conditional Probability",
+          type: "spr",
+          prompt: "Among \\(200\\) students, \\(120\\) take statistics, \\(95\\) take economics, and \\(40\\) take neither. Given a student takes statistics, what is the probability (as a decimal to 3 places) they also take economics?",
+          correctAnswer: ["0.458", ".458", "11/24"],
+          explanation: "\\(160\\) take at least one course, so \\(120 + 95 - 160 = 55\\) take both. Conditional probability = \\(\\frac{55}{120} = \\frac{11}{24} \\approx 0.458\\)."
+        },
+        {
+          id: "MATH-M2H-6",
+          section: "math",
+          domain: "Geometry & Trigonometry",
+          skill: "Volume Scaling",
+          type: "spr",
+          prompt: "Cylinder A has volume \\(54\\pi\\). Cylinder B has twice the radius and one-third the height of Cylinder A. What is the volume of Cylinder B divided by \\(\\pi\\)?",
+          correctAnswer: ["72"],
+          explanation: "\\(V_B = \\pi(2r)^2(\\frac{1}{3}h) = \\frac{4}{3}\\pi r^2 h = \\frac{4}{3}(54\\pi) = 72\\pi\\). Divided by \\(\\pi\\) is \\(72\\)."
+        }
+      ]
+    };
+
+    /**
+     * EXAM STATE
+     */
+    let examState = {
+      mode: "full", // "full" | "math_only" | "rw_only"
+      stages: [],
+      currentStageIdx: 0,
+      currentQuestionIdx: 0,
+      questions: [],
+      userAnswers: {},
+      eliminatedChoices: {},
+      flaggedQuestions: {},
+      passageHTMLCache: {},
+      completedHistory: [],
+      routingPaths: { rw: null, math: null },
+      timerSeconds: 0,
+      timerInterval: null,
+      breakInterval: null,
+      timerHidden: false
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      renderMathInDOM(document.body);
+    });
+
+    function renderMathInDOM(element) {
+      if (window.renderMathInElement) {
+        renderMathInElement(element, {
+          delimiters: [
+            { left: "\\(", right: "\\)", display: false },
+            { left: "\\[", right: "\\]", display: true }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    /**
+     * START EXAM BY MODE
+     * - "full": RW M1 -> RW M2 (adaptive) -> Optional Break -> Math M1 -> Math M2 (adaptive)
+     * - "math_only": Math M1 -> Math M2 (adaptive) directly
+     * - "rw_only": RW M1 -> RW M2 (adaptive) directly
+     */
+    function startExam(mode) {
+      clearAllTimers();
+
+      examState = {
+        mode,
+        stages: [],
+        currentStageIdx: 0,
+        currentQuestionIdx: 0,
+        questions: [],
+        userAnswers: {},
+        eliminatedChoices: {},
+        flaggedQuestions: {},
+        passageHTMLCache: {},
+        completedHistory: [],
+        routingPaths: { rw: null, math: null },
+        timerSeconds: 0,
+        timerInterval: null,
+        breakInterval: null,
+        timerHidden: false
+      };
+
+      if (mode === "full") {
+        examState.stages = [
+          { section: "rw", moduleNum: 1, title: "Section 1, Module 1: Reading and Writing", duration: EXAM_CONFIG.timers.rwModuleSeconds },
+          { section: "rw", moduleNum: 2, title: "Section 1, Module 2: Reading and Writing", duration: EXAM_CONFIG.timers.rwModuleSeconds },
+          { section: "math", moduleNum: 1, title: "Section 2, Module 1: Math", duration: EXAM_CONFIG.timers.mathModuleSeconds, hasBreakBefore: true },
+          { section: "math", moduleNum: 2, title: "Section 2, Module 2: Math", duration: EXAM_CONFIG.timers.mathModuleSeconds }
+        ];
+      } else if (mode === "math_only") {
+        examState.stages = [
+          { section: "math", moduleNum: 1, title: "Math Only Test • Module 1", duration: EXAM_CONFIG.timers.mathModuleSeconds },
+          { section: "math", moduleNum: 2, title: "Math Only Test • Module 2", duration: EXAM_CONFIG.timers.mathModuleSeconds }
+        ];
+      } else if (mode === "rw_only") {
+        examState.stages = [
+          { section: "rw", moduleNum: 1, title: "Reading & Writing • Module 1", duration: EXAM_CONFIG.timers.rwModuleSeconds },
+          { section: "rw", moduleNum: 2, title: "Reading & Writing • Module 2", duration: EXAM_CONFIG.timers.rwModuleSeconds }
+        ];
+      }
+
+      document.getElementById("landing-view").classList.add("hidden");
+      document.getElementById("report-view").classList.add("hidden");
+      loadStage(0);
+    }
+
+    function clearAllTimers() {
+      if (examState.timerInterval) clearInterval(examState.timerInterval);
+      if (examState.breakInterval) clearInterval(examState.breakInterval);
+      examState.timerInterval = null;
+      examState.breakInterval = null;
+    }
+
+    function loadStage(stageIdx) {
+      clearAllTimers();
+      examState.currentStageIdx = stageIdx;
+      examState.currentQuestionIdx = 0;
+      const stage = examState.stages[stageIdx];
+
+      if (stage.section === "rw" && stage.moduleNum === 1) {
+        examState.questions = QUESTION_BANK.rw_m1;
+      } else if (stage.section === "rw" && stage.moduleNum === 2) {
+        examState.questions = examState.routingPaths.rw === "Hard" ? QUESTION_BANK.rw_m2_hard : QUESTION_BANK.rw_m2_easy;
+      } else if (stage.section === "math" && stage.moduleNum === 1) {
+        examState.questions = QUESTION_BANK.math_m1;
+      } else if (stage.section === "math" && stage.moduleNum === 2) {
+        examState.questions = examState.routingPaths.math === "Hard" ? QUESTION_BANK.math_m2_hard : QUESTION_BANK.math_m2_easy;
+      }
+
+      document.getElementById("header-section-title").textContent = stage.title;
+      const pill = document.getElementById("header-adaptive-pill");
+      if (stage.moduleNum === 1) {
+        pill.textContent = "Module 1 (Baseline)";
+        pill.className = "hidden sm:inline-block text-[11px] font-semibold px-2 py-0.5 rounded bg-slate-200 text-slate-700";
+      } else {
+        const tier = stage.section === "rw" ? examState.routingPaths.rw : examState.routingPaths.math;
+        pill.textContent = tier === "Hard" ? "Module 2 • Harder Tier" : "Module 2 • Standard Tier";
+        pill.className = tier === "Hard"
+          ? "hidden sm:inline-block text-[11px] font-semibold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800"
+          : "hidden sm:inline-block text-[11px] font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+      }
+
+      // Show RW tools vs Math tools
+      const isRW = stage.section === "rw";
+      document.getElementById("btn-highlighter").classList.toggle("hidden", !isRW);
+      document.getElementById("btn-clear-highlights").classList.toggle("hidden", !isRW);
+      document.getElementById("btn-calculator").classList.toggle("hidden", isRW);
+      document.getElementById("btn-reference").classList.toggle("hidden", isRW);
+      if (isRW) {
+        document.getElementById("calculator-modal").classList.add("hidden");
+      }
+
+      const dirTitle = document.getElementById("directions-title");
+      const dirBody = document.getElementById("directions-body");
+      if (isRW) {
+        dirTitle.textContent = "Reading and Writing Directions";
+        dirBody.innerHTML = `
+          <p>Each question includes a short passage and one discrete multiple-choice question with four answer choices.</p>
+          <p>Select text in the passage and click <strong>Highlight</strong> to annotate key details, or use the strikethrough button beside any choice to eliminate it.</p>
+        `;
+      } else {
+        dirTitle.textContent = "Math Section Directions";
+        dirBody.innerHTML = `
+          <p>Use of the built-in Graphing & Scientific Calculator and Reference Sheet is permitted on all Math questions.</p>
+          <p>For <strong>Student-Produced Response (SPR)</strong> questions, enter an integer, decimal, or fraction (such as <code>11/24</code>). Do not enter mixed numbers.</p>
+        `;
+      }
+
+      document.getElementById("transition-view").classList.add("hidden");
+      document.getElementById("exam-view").classList.remove("hidden");
+
+      startModuleTimer(stage.duration);
+      renderCurrentQuestion();
+    }
+
+    /**
+     * MODULE TIMER
+     */
+    function startModuleTimer(seconds) {
+      examState.timerSeconds = seconds;
+      updateTimerDisplay();
+
+      examState.timerInterval = setInterval(() => {
+        examState.timerSeconds--;
+        updateTimerDisplay();
+        if (examState.timerSeconds <= 0) {
+          clearInterval(examState.timerInterval);
+          completeCurrentModule();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const display = document.getElementById("timer-display");
+      if (examState.timerHidden) {
+        display.innerHTML = `<i data-lucide="clock" class="w-5 h-5 text-slate-500 my-1"></i>`;
+        lucide.createIcons();
+        return;
+      }
+
+      const safeSecs = Math.max(0, examState.timerSeconds);
+      const mins = Math.floor(safeSecs / 60);
+      const secs = safeSecs % 60;
+      display.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+      if (safeSecs <= EXAM_CONFIG.lowTimeWarningSeconds) {
+        display.classList.remove("text-slate-900");
+        display.classList.add("text-rose-600");
+      } else {
+        display.classList.remove("text-rose-600");
+        display.classList.add("text-slate-900");
+      }
+    }
+
+    function toggleTimerVisibility() {
+      examState.timerHidden = !examState.timerHidden;
+      document.getElementById("timer-toggle-btn").textContent = examState.timerHidden ? "Show" : "Hide";
+      updateTimerDisplay();
+    }
+
+    /**
+     * QUESTION RENDERING
+     */
+    function renderCurrentQuestion() {
+      const q = examState.questions[examState.currentQuestionIdx];
+      const qNum = examState.currentQuestionIdx + 1;
+      const totalQ = examState.questions.length;
+      const isFlagged = !!examState.flaggedQuestions[q.id];
+      const userAnswer = examState.userAnswers[q.id];
+      const eliminated = examState.eliminatedChoices[q.id] || new Set();
+
+      document.getElementById("footer-domain-label").textContent = `${q.domain} • ${q.skill}`;
+      document.getElementById("nav-drawer-label").textContent = `Question ${qNum} of ${totalQ}`;
+      document.getElementById("btn-prev-q").disabled = examState.currentQuestionIdx === 0;
+      document.getElementById("btn-next-q").textContent = examState.currentQuestionIdx === totalQ - 1 ? "Review / Finish" : "Next";
+
+      const stageContainer = document.getElementById("question-stage");
+
+      const questionTopBar = `
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
+          <div class="flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded bg-slate-900 text-white font-bold text-sm flex items-center justify-center">
+              ${qNum}
+            </span>
+            <button onclick="toggleFlagQuestion('${q.id}')" class="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md border transition cursor-pointer ${isFlagged ? "bg-rose-50 border-rose-300 text-rose-700" : "bg-white border-slate-300 text-slate-600 hover:bg-slate-50"}">
+              <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isFlagged ? "fill-rose-600 text-rose-600" : ""}"></i>
+              <span>${isFlagged ? "Marked for Review" : "Mark for Review"}</span>
+            </button>
+          </div>
+          <span class="text-[11px] font-mono text-slate-400">${q.id}</span>
+        </div>
+      `;
+
+      let answerAreaHTML = "";
+      if (q.type === "mc") {
+        const letters = ["A", "B", "C", "D"];
+        answerAreaHTML = `<div class="space-y-3 mt-5">`;
+        q.choices.forEach((choiceText, idx) => {
+          const isSelected = userAnswer === idx;
+          const isEliminated = eliminated.has(idx);
+          answerAreaHTML += `
+            <div class="flex items-center gap-2 ${isEliminated ? "eliminated-option" : ""}">
+              <button onclick="selectChoice('${q.id}', ${idx})" class="flex-1 text-left p-3.5 rounded-xl border-2 transition flex items-start gap-3.5 cursor-pointer ${isSelected ? "border-[#1e3a8a] bg-blue-50/70" : "border-slate-300 bg-white hover:border-slate-400"}">
+                <span class="w-7 h-7 rounded-full border-2 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 transition ${isSelected ? "border-[#1e3a8a] bg-[#1e3a8a] text-white" : "border-slate-500 text-slate-700"}">
+                  ${letters[idx]}
+                </span>
+                <span class="option-text text-sm sm:text-base text-slate-800 leading-snug pt-0.5">${choiceText}</span>
+              </button>
+              <button onclick="toggleEliminateChoice('${q.id}', ${idx})" title="${isEliminated ? "Restore choice" : "Eliminate choice"}" class="w-8 h-8 rounded-full border border-slate-300 hover:bg-slate-100 text-slate-500 flex items-center justify-center text-xs font-bold shrink-0 transition cursor-pointer">
+                ${isEliminated ? "Undo" : `<span class="line-through">${letters[idx]}</span>`}
+              </button>
+            </div>
+          `;
+        });
+        answerAreaHTML += `</div>`;
+      } else {
+        const val = userAnswer !== undefined ? userAnswer : "";
+        answerAreaHTML = `
+          <div class="mt-6 p-5 rounded-2xl bg-slate-50 border border-slate-200">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              Student-Produced Response (Enter Numeric Answer)
+            </label>
+            <input
+              type="text"
+              id="spr-input-${q.id}"
+              value="${val}"
+              oninput="handleSPRInput('${q.id}', this.value)"
+              placeholder="e.g. 42, 3.5, or 11/24"
+              class="w-full sm:w-64 px-4 py-3 rounded-xl border-2 border-slate-300 focus:border-[#1e3a8a] focus:outline-none font-mono text-lg font-bold text-slate-900 bg-white"
+            />
+            <p class="text-xs text-slate-500 mt-2.5">
+              Accepted formats: integers, decimals, or simplified fractions (e.g., <code class="bg-slate-200 px-1 rounded">11/24</code>).
+            </p>
+          </div>
+        `;
+      }
+
+      if (q.section === "rw") {
+        const cachedPassage = examState.passageHTMLCache[q.id] || q.passage;
+        stageContainer.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-2 h-full divide-y lg:divide-y-0 lg:divide-x divide-slate-300">
+            <div class="p-5 sm:p-8 lg:overflow-y-auto bg-white">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+                <span>Passage</span>
+                <span class="text-slate-400 font-normal">Select text & click Highlight</span>
+              </div>
+              <div id="passage-text-box" class="passage-font text-base sm:text-[17px] text-slate-900 space-y-4">
+                ${cachedPassage}
+              </div>
+            </div>
+            <div class="p-5 sm:p-8 lg:overflow-y-auto bg-slate-50/40">
+              ${questionTopBar}
+              <div class="text-sm sm:text-base font-medium text-slate-900 leading-relaxed">
+                ${q.prompt}
+              </div>
+              ${answerAreaHTML}
+            </div>
+          </div>
+        `;
+      } else {
+        stageContainer.innerHTML = `
+          <div class="max-w-3xl mx-auto p-5 sm:p-10">
+            ${questionTopBar}
+            <div class="text-base sm:text-lg font-medium text-slate-900 leading-relaxed mb-2">
+              ${q.prompt}
+            </div>
+            ${answerAreaHTML}
+          </div>
+        `;
+      }
+
+      lucide.createIcons();
+      renderMathInDOM(stageContainer);
+    }
+
+    /**
+     * USER INTERACTIONS & TOOLS
+     */
+    function selectChoice(qId, choiceIdx) {
+      if (examState.eliminatedChoices[qId]) {
+        examState.eliminatedChoices[qId].delete(choiceIdx);
+      }
+      examState.userAnswers[qId] = choiceIdx;
+      renderCurrentQuestion();
+    }
+
+    function handleSPRInput(qId, value) {
+      const trimmed = value.trim();
+      if (trimmed === "") {
+        delete examState.userAnswers[qId];
+      } else {
+        examState.userAnswers[qId] = trimmed;
+      }
+    }
+
+    function toggleEliminateChoice(qId, choiceIdx) {
+      if (!examState.eliminatedChoices[qId]) {
+        examState.eliminatedChoices[qId] = new Set();
+      }
+      if (examState.eliminatedChoices[qId].has(choiceIdx)) {
+        examState.eliminatedChoices[qId].delete(choiceIdx);
+      } else {
+        examState.eliminatedChoices[qId].add(choiceIdx);
+        if (examState.userAnswers[qId] === choiceIdx) {
+          delete examState.userAnswers[qId];
+        }
+      }
+      renderCurrentQuestion();
+    }
+
+    function toggleFlagQuestion(qId) {
+      examState.flaggedQuestions[qId] = !examState.flaggedQuestions[qId];
+      renderCurrentQuestion();
+    }
+
+    function highlightSelectedText() {
+      const passageBox = document.getElementById("passage-text-box");
+      if (!passageBox) return;
+
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+
+      const range = selection.getRangeAt(0);
+      if (!passageBox.contains(range.commonAncestorContainer)) return;
+
+      try {
+        const mark = document.createElement("mark");
+        mark.className = "sat-highlight";
+        mark.title = "Click to remove highlight";
+        mark.onclick = function () {
+          const parent = this.parentNode;
+          while (this.firstChild) parent.insertBefore(this.firstChild, this);
+          parent.removeChild(this);
+          const q = examState.questions[examState.currentQuestionIdx];
+          examState.passageHTMLCache[q.id] = passageBox.innerHTML;
+        };
+        range.surroundContents(mark);
+        selection.removeAllRanges();
+
+        const q = examState.questions[examState.currentQuestionIdx];
+        examState.passageHTMLCache[q.id] = passageBox.innerHTML;
+      } catch (e) {
+        selection.removeAllRanges();
+      }
+    }
+
+    function clearPassageHighlights() {
+      const q = examState.questions[examState.currentQuestionIdx];
+      delete examState.passageHTMLCache[q.id];
+      renderCurrentQuestion();
+    }
+
+    function navigateQuestion(delta) {
+      const nextIdx = examState.currentQuestionIdx + delta;
+      if (nextIdx >= 0 && nextIdx < examState.questions.length) {
+        examState.currentQuestionIdx = nextIdx;
+        renderCurrentQuestion();
+      } else if (nextIdx >= examState.questions.length) {
+        toggleNavigatorDrawer();
+      }
+    }
+
+    function jumpToQuestion(idx) {
+      examState.currentQuestionIdx = idx;
+      toggleNavigatorDrawer();
+      renderCurrentQuestion();
+    }
+
+    /**
+     * NAVIGATOR & END-MODULE CONFIRMATION
+     */
+    function toggleNavigatorDrawer() {
+      const drawer = document.getElementById("navigator-drawer");
+      const isHidden = drawer.classList.contains("hidden");
+      if (!isHidden) {
+        drawer.classList.add("hidden");
+        return;
+      }
+
+      const stage = examState.stages[examState.currentStageIdx];
+      document.getElementById("drawer-module-title").textContent = stage.title;
+
+      const grid = document.getElementById("navigator-grid");
+      grid.innerHTML = "";
+      let answeredCount = 0;
+
+      examState.questions.forEach((q, idx) => {
+        const isCurrent = idx === examState.currentQuestionIdx;
+        const isAnswered = examState.userAnswers[q.id] !== undefined && examState.userAnswers[q.id] !== "";
+        const isFlagged = !!examState.flaggedQuestions[q.id];
+        if (isAnswered) answeredCount++;
+
+        let btnClasses = "relative h-11 rounded-lg font-bold text-sm flex items-center justify-center transition cursor-pointer ";
+        btnClasses += isAnswered ? "bg-[#1e3a8a] text-white " : "bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 ";
+        if (isCurrent) {
+          btnClasses += "ring-2 ring-offset-2 ring-slate-900 ";
+        }
+
+        grid.innerHTML += `
+          <button onclick="jumpToQuestion(${idx})" class="${btnClasses}">
+            ${idx + 1}
+            ${isFlagged ? `<span class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center shadow"><i data-lucide="bookmark" class="w-2.5 h-2.5 fill-white"></i></span>` : ""}
+          </button>
+        `;
+      });
+
+      document.getElementById("drawer-summary-text").textContent = `${answeredCount} of ${examState.questions.length} Answered`;
+      drawer.classList.remove("hidden");
+      lucide.createIcons();
+    }
+
+    function openEndModuleConfirm() {
+      const unanswered = examState.questions.filter(
+        q => examState.userAnswers[q.id] === undefined || examState.userAnswers[q.id] === ""
+      ).length;
+
+      document.getElementById("confirm-modal-text").textContent =
+        unanswered > 0
+          ? `You have ${unanswered} unanswered question(s) in this module. Once submitted, you cannot return to this module.`
+          : "All questions in this module are answered. Submit and continue?";
+      toggleModal("confirm-modal");
+    }
+
+    /**
+     * ADAPTIVE ROUTING & MODULE COMPLETION
+     */
+    function isQuestionCorrect(q, userAns) {
+      if (userAns === undefined || userAns === null || userAns === "") return false;
+      if (q.type === "mc") {
+        return userAns === q.correctAnswer;
+      }
+      const normalizedUser = String(userAns).replace(/\s+/g, "").toLowerCase();
+      return q.correctAnswer.some(valid => valid.toLowerCase() === normalizedUser);
+    }
+
+    function completeCurrentModule() {
+      clearAllTimers();
+      const stage = examState.stages[examState.currentStageIdx];
+      let moduleCorrect = 0;
+
+      examState.questions.forEach(q => {
+        const ans = examState.userAnswers[q.id];
+        const correct = isQuestionCorrect(q, ans);
+        if (correct) moduleCorrect++;
+
+        examState.completedHistory.push({
+          ...q,
+          moduleNum: stage.moduleNum,
+          tier: stage.moduleNum === 1 ? "Baseline" : (stage.section === "rw" ? examState.routingPaths.rw : examState.routingPaths.math),
+          userAnswer: ans,
+          isCorrect: correct,
+          wasFlagged: !!examState.flaggedQuestions[q.id]
+        });
+      });
+
+      if (stage.moduleNum === 1) {
+        const accuracy = moduleCorrect / examState.questions.length;
+        examState.routingPaths[stage.section] = accuracy >= EXAM_CONFIG.adaptiveThreshold ? "Hard" : "Easy";
+      }
+
+      const nextStageIdx = examState.currentStageIdx + 1;
+      if (nextStageIdx < examState.stages.length) {
+        showTransitionScreen(nextStageIdx, moduleCorrect, examState.questions.length);
+      } else {
+        generateScoreReport();
+      }
+    }
+
+    function showTransitionScreen(nextStageIdx, prevCorrect, prevTotal) {
+      const nextStage = examState.stages[nextStageIdx];
+      document.getElementById("exam-view").classList.add("hidden");
+      document.getElementById("transition-view").classList.remove("hidden");
+
+      document.getElementById("transition-next-module").textContent = nextStage.title;
+      document.getElementById("transition-time").textContent = `${Math.round(nextStage.duration / 60)} Minutes`;
+
+      const breakBox = document.getElementById("break-timer-box");
+      if (nextStage.hasBreakBefore) {
+        breakBox.classList.remove("hidden");
+        let breakSecs = EXAM_CONFIG.timers.breakSeconds;
+        const updateBreakText = () => {
+          const safe = Math.max(0, breakSecs);
+          const m = Math.floor(safe / 60);
+          const s = safe % 60;
+          document.getElementById("break-timer-display").textContent =
+            `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+        };
+        updateBreakText();
+        examState.breakInterval = setInterval(() => {
+          breakSecs--;
+          updateBreakText();
+          if (breakSecs <= 0) clearInterval(examState.breakInterval);
+        }, 1000);
+
+        document.getElementById("transition-badge").textContent = "Section 1 Complete • Break Available";
+        document.getElementById("transition-title").textContent = "Reading & Writing Complete";
+        document.getElementById("transition-tier").textContent = "Section 2 • Math Module 1";
+        document.getElementById("transition-tier").className = "font-bold text-emerald-700";
+        document.getElementById("transition-desc").textContent =
+          "Take an optional break or click Begin Next Module to start Math Module 1.";
+      } else {
+        breakBox.classList.add("hidden");
+        const tier = examState.routingPaths[nextStage.section];
+        document.getElementById("transition-badge").textContent = "Multistage Adaptive Routing";
+        document.getElementById("transition-title").textContent = `Module 1 Complete (${prevCorrect}/${prevTotal} Correct)`;
+        document.getElementById("transition-tier").textContent = tier === "Hard"
+          ? "Module 2 • Harder Tier (Higher Ceiling)"
+          : "Module 2 • Standard Tier";
+        document.getElementById("transition-tier").className = tier === "Hard"
+          ? "font-bold text-indigo-700"
+          : "font-bold text-amber-700";
+        document.getElementById("transition-desc").textContent = tier === "Hard"
+          ? "You met the routing threshold and unlocked the Harder Module 2."
+          : "You have been routed to the Standard Module 2 based on Module 1 accuracy.";
+      }
+
+      lucide.createIcons();
+    }
+
+    function proceedFromTransition() {
+      if (examState.breakInterval) clearInterval(examState.breakInterval);
+      loadStage(examState.currentStageIdx + 1);
+    }
+
+    /**
+     * SCORING & REPORT ENGINE
+     */
+    function calculateSectionScaledScore(sectionItems, routeTier) {
+      if (sectionItems.length === 0) return null;
+      const m1Items = sectionItems.filter(i => i.moduleNum === 1);
+      const m2Items = sectionItems.filter(i => i.moduleNum === 2);
+
+      const m1Correct = m1Items.filter(i => i.isCorrect).length;
+      const m2Correct = m2Items.filter(i => i.isCorrect).length;
+      const m1Ratio = m1Items.length ? m1Correct / m1Items.length : 0;
+      const m2Ratio = m2Items.length ? m2Correct / m2Items.length : 0;
+
+      const rawScore = routeTier === "Hard"
+        ? 200 + m1Ratio * 260 + m2Ratio * 340
+        : 200 + m1Ratio * 230 + m2Ratio * 220;
+
+      return Math.min(800, Math.max(200, Math.round(rawScore / 10) * 10));
+    }
+
+    function generateScoreReport() {
+      clearAllTimers();
+      document.getElementById("exam-view").classList.add("hidden");
+      document.getElementById("transition-view").classList.add("hidden");
+      document.getElementById("report-view").classList.remove("hidden");
+
+      document.getElementById("report-date").textContent = new Date().toLocaleDateString("en-US", {
+        month: "long", day: "numeric", year: "numeric"
+      });
+
+      const rwItems = examState.completedHistory.filter(i => i.section === "rw");
+      const mathItems = examState.completedHistory.filter(i => i.section === "math");
+
+      const rwScore = calculateSectionScaledScore(rwItems, examState.routingPaths.rw);
+      const mathScore = calculateSectionScaledScore(mathItems, examState.routingPaths.math);
+
+      const totalCorrect = examState.completedHistory.filter(i => i.isCorrect).length;
+      const totalQ = examState.completedHistory.length;
+      const totalPct = totalQ ? Math.round((totalCorrect / totalQ) * 100) : 0;
+
+      document.getElementById("score-raw-acc").textContent = `${totalCorrect}/${totalQ} (${totalPct}%)`;
+
+      const rwCard = document.getElementById("card-rw-score");
+      const mathCard = document.getElementById("card-math-score");
+      const totalEl = document.getElementById("score-total");
+      const denomEl = document.getElementById("score-total-denom");
+      const labelEl = document.getElementById("score-primary-label");
+      const modeBadgeEl = document.getElementById("score-mode-badge");
+
+      if (rwScore !== null && mathScore !== null) {
+        labelEl.textContent = "Total Scaled Score";
+        totalEl.textContent = rwScore + mathScore;
+        denomEl.textContent = "/ 1600";
+        modeBadgeEl.textContent = "Full Simulation";
+        rwCard.classList.remove("opacity-50");
+        mathCard.classList.remove("opacity-50");
+      } else if (mathScore !== null) {
+        labelEl.textContent = "Math Scaled Score";
+        totalEl.textContent = mathScore;
+        denomEl.textContent = "/ 800";
+        modeBadgeEl.textContent = "Math Only Test";
+        rwCard.classList.add("opacity-50");
+        mathCard.classList.remove("opacity-50");
+      } else {
+        labelEl.textContent = "Reading & Writing Score";
+        totalEl.textContent = rwScore;
+        denomEl.textContent = "/ 800";
+        modeBadgeEl.textContent = "RW Only Test";
+        mathCard.classList.add("opacity-50");
+        rwCard.classList.remove("opacity-50");
+      }
+
+      document.getElementById("score-percentile-text").textContent =
+        `Adaptive Routing: ${examState.routingPaths.math ? `Math → ${examState.routingPaths.math} M2` : `RW → ${examState.routingPaths.rw} M2`}`;
+
+      if (rwScore !== null) {
+        const rwCorrect = rwItems.filter(i => i.isCorrect).length;
+        document.getElementById("score-rw").textContent = rwScore;
+        document.getElementById("rw-correct-count").textContent = `${rwCorrect}/${rwItems.length}`;
+        document.getElementById("bar-rw").style.width = `${((rwScore - 200) / 600) * 100}%`;
+        document.getElementById("rw-route-badge").textContent = `M1 → ${examState.routingPaths.rw === "Hard" ? "Harder M2" : "Standard M2"}`;
+      } else {
+        document.getElementById("score-rw").textContent = "—";
+        document.getElementById("rw-correct-count").textContent = "Not Taken";
+        document.getElementById("bar-rw").style.width = "0%";
+        document.getElementById("rw-route-badge").textContent = "Skipped";
+      }
+
+      if (mathScore !== null) {
+        const mathCorrect = mathItems.filter(i => i.isCorrect).length;
+        document.getElementById("score-math").textContent = mathScore;
+        document.getElementById("math-correct-count").textContent = `${mathCorrect}/${mathItems.length}`;
+        document.getElementById("bar-math").style.width = `${((mathScore - 200) / 600) * 100}%`;
+        document.getElementById("math-route-badge").textContent = `M1 → ${examState.routingPaths.math === "Hard" ? "Harder M2" : "Standard M2"}`;
+      } else {
+        document.getElementById("score-math").textContent = "—";
+        document.getElementById("math-correct-count").textContent = "Not Taken";
+        document.getElementById("bar-math").style.width = "0%";
+        document.getElementById("math-route-badge").textContent = "Skipped";
+      }
+
+      renderDomainBreakdown();
+      filterReview("all");
+      lucide.createIcons();
+    }
+
+    function renderDomainBreakdown() {
+      const domainStats = {};
+      examState.completedHistory.forEach(item => {
+        if (!domainStats[item.domain]) {
+          domainStats[item.domain] = { correct: 0, total: 0, section: item.section };
+        }
+        domainStats[item.domain].total++;
+        if (item.isCorrect) domainStats[item.domain].correct++;
+      });
+
+      const container = document.getElementById("domain-bars-container");
+      container.innerHTML = "";
+
+      Object.entries(domainStats).forEach(([domain, stat]) => {
+        const pct = Math.round((stat.correct / stat.total) * 100);
+        const barColor = pct >= 80 ? "bg-emerald-500" : pct >= 50 ? "bg-blue-600" : "bg-amber-500";
+        container.innerHTML += `
+          <div>
+            <div class="flex justify-between items-center text-sm mb-1.5">
+              <div>
+                <span class="font-bold text-slate-800">${domain}</span>
+                <span class="ml-2 text-[11px] uppercase font-semibold text-slate-400">${stat.section === "rw" ? "RW" : "Math"}</span>
+              </div>
+              <span class="font-mono font-bold text-slate-700">${stat.correct}/${stat.total} (${pct}%)</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+              <div class="${barColor} h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filterReview(filterType) {
+      ["all", "incorrect", "flagged"].forEach(t => {
+        const btn = document.getElementById(`filter-${t}`);
+        btn.className = t === filterType
+          ? "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-[#1e3a8a] text-white cursor-pointer"
+          : "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer";
+      });
+
+      let filtered = examState.completedHistory;
+      if (filterType === "incorrect") filtered = filtered.filter(i => !i.isCorrect);
+      if (filterType === "flagged") filtered = filtered.filter(i => i.wasFlagged);
+
+      const container = document.getElementById("review-list-container");
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 text-slate-500 text-sm bg-slate-50 rounded-xl border border-slate-200">
+            No questions match this filter criteria.
+          </div>
+        `;
+        return;
+      }
+
+      const letters = ["A", "B", "C", "D"];
+      container.innerHTML = filtered.map(item => {
+        const statusBadge = item.isCorrect
+          ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800"><i data-lucide="check" class="w-3.5 h-3.5"></i> Correct</span>`
+          : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800"><i data-lucide="x" class="w-3.5 h-3.5"></i> Incorrect</span>`;
+
+        const flagBadge = item.wasFlagged
+          ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800"><i data-lucide="bookmark" class="w-3 h-3 fill-amber-700"></i> Flagged</span>`
+          : "";
+
+        let userAnsDisplay = '<span class="italic text-slate-400">Omitted (Unanswered)</span>';
+        let correctAnsDisplay = "";
+
+        if (item.type === "mc") {
+          if (item.userAnswer !== undefined) {
+            userAnsDisplay = `<strong>(${letters[item.userAnswer]})</strong> ${item.choices[item.userAnswer]}`;
+          }
+          correctAnsDisplay = `<strong>(${letters[item.correctAnswer]})</strong> ${item.choices[item.correctAnswer]}`;
+        } else {
+          if (item.userAnswer !== undefined && item.userAnswer !== "") {
+            userAnsDisplay = `<code class="font-mono font-bold">${item.userAnswer}</code>`;
+          }
+          correctAnsDisplay = `<code class="font-mono font-bold">${item.correctAnswer[0]}</code>`;
+        }
+
+        return `
+          <div class="p-5 sm:p-6 rounded-2xl border ${item.isCorrect ? "border-slate-200 bg-white" : "border-rose-200 bg-rose-50/20"}">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-white">${item.id}</span>
+                <span class="text-xs font-semibold text-slate-600">${item.domain} • ${item.skill}</span>
+                ${flagBadge}
+              </div>
+              ${statusBadge}
+            </div>
+
+            ${item.passage ? `<div class="passage-font text-sm text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-200 mb-3">${item.passage}</div>` : ""}
+
+            <div class="text-sm sm:text-base font-semibold text-slate-900 mb-4">${item.prompt}</div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-4">
+              <div class="p-3 rounded-xl border ${item.isCorrect ? "border-emerald-200 bg-emerald-50/50" : "border-rose-200 bg-rose-50/60"}">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Your Response</div>
+                <div class="text-slate-900">${userAnsDisplay}</div>
+              </div>
+              <div class="p-3 rounded-xl border border-emerald-200 bg-emerald-50/50">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 mb-1">Correct Answer</div>
+                <div class="text-slate-900">${correctAnsDisplay}</div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-blue-50/60 border border-blue-100 text-sm text-slate-800 leading-relaxed">
+              <span class="font-bold text-[#1e3a8a] block mb-1">Step-by-Step Explanation:</span>
+              ${item.explanation}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+      renderMathInDOM(container);
+    }
+
+    function resetToLanding() {
+      clearAllTimers();
+      document.getElementById("report-view").classList.add("hidden");
+      document.getElementById("exam-view").classList.add("hidden");
+      document.getElementById("transition-view").classList.add("hidden");
+      document.getElementById("landing-view").classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /**
+     * MODAL & CALCULATOR HELPERS
+     */
+    function toggleModal(modalId) {
+      const el = document.getElementById(modalId);
+      el.classList.toggle("hidden");
+      if (!el.classList.contains("hidden")) {
+        renderMathInDOM(el);
+        if (modalId === "calculator-modal") {
+          plotGraph();
+        }
+      }
+    }
+
+    function toggleDirectionsModal() {
+      toggleModal("directions-modal");
+    }
+
+    function switchCalcTab(tab) {
+      const isSci = tab === "sci";
+      document.getElementById("calc-pane-sci").classList.toggle("hidden", !isSci);
+      document.getElementById("calc-pane-graph").classList.toggle("hidden", isSci);
+
+      document.getElementById("calc-tab-sci").className = isSci
+        ? "flex-1 py-2 text-blue-700 border-b-2 border-blue-700 bg-white cursor-pointer"
+        : "flex-1 py-2 text-slate-500 hover:text-slate-800 cursor-pointer";
+      document.getElementById("calc-tab-graph").className = !isSci
+        ? "flex-1 py-2 text-blue-700 border-b-2 border-blue-700 bg-white cursor-pointer"
+        : "flex-1 py-2 text-slate-500 hover:text-slate-800 cursor-pointer";
+
+      if (!isSci) plotGraph();
+    }
+
+    function appendCalc(val) {
+      const input = document.getElementById("calc-input");
+      input.value += val;
+      input.focus();
+    }
+
+    function clearCalc() {
+      document.getElementById("calc-input").value = "";
+      document.getElementById("calc-output").textContent = "0";
+    }
+
+    function backspaceCalc() {
+      const input = document.getElementById("calc-input");
+      input.value = input.value.slice(0, -1);
+    }
+
+    function evaluateCalc() {
+      const input = document.getElementById("calc-input").value;
+      const out = document.getElementById("calc-output");
+      try {
+        const sanitized = input
+          .replace(/\^/g, "**")
+          .replace(/sin\(/g, "Math.sin(")
+          .replace(/cos\(/g, "Math.cos(")
+          .replace(/tan\(/g, "Math.tan(");
+        const result = Function('"use strict";return (' + sanitized + ")")();
+        out.textContent = Number.isFinite(result) ? Number(result.toPrecision(10)) : "Error";
+      } catch (e) {
+        out.textContent = "Syntax Error";
+      }
+    }
+
+    function plotGraph() {
+      const canvas = document.getElementById("graph-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const xMin = -10, xMax = 10;
+      const yMin = -6, yMax = 6;
+      const toPxX = x => ((x - xMin) / (xMax - xMin)) * w;
+      const toPxY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+      ctx.strokeStyle = "#e2e8f0";
+      ctx.lineWidth = 1;
+      for (let gx = Math.ceil(xMin); gx <= xMax; gx++) {
+        ctx.beginPath();
+        ctx.moveTo(toPxX(gx), 0);
+        ctx.lineTo(toPxX(gx), h);
+        ctx.stroke();
+      }
+      for (let gy = Math.ceil(yMin); gy <= yMax; gy++) {
+        ctx.beginPath();
+        ctx.moveTo(0, toPxY(gy));
+        ctx.lineTo(w, toPxY(gy));
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = "#64748b";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, toPxY(0));
+      ctx.lineTo(w, toPxY(0));
+      ctx.moveTo(toPxX(0), 0);
+      ctx.lineTo(toPxX(0), h);
+      ctx.stroke();
+
+      const rawExpr = document.getElementById("graph-fn-input").value;
+      const expr = rawExpr
+        .replace(/\^/g, "**")
+        .replace(/sin\(/g, "Math.sin(")
+        .replace(/cos\(/g, "Math.cos(")
+        .replace(/tan\(/g, "Math.tan(")
+        .replace(/sqrt\(/g, "Math.sqrt(")
+        .replace(/abs\(/g, "Math.abs(");
+
+      try {
+        const fn = new Function("x", `return ${expr};`);
+        ctx.strokeStyle = "#1e3a8a";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        let started = false;
+
+        for (let px = 0; px <= w; px += 1.5) {
+          const x = xMin + (px / w) * (xMax - xMin);
+          const y = fn(x);
+          if (Number.isFinite(y) && Math.abs(y) < 100) {
+            const py = toPxY(y);
+            if (!started) {
+              ctx.moveTo(px, py);
+              started = true;
+            } else {
+              ctx.lineTo(px, py);
+            }
+          } else {
+            started = false;
+          }
+        }
+        ctx.stroke();
+      } catch (e) {
+        // Ignore invalid expressions while user is typing
+      }
+    }
+  </script>
+</body>
+</html>
